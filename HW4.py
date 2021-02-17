@@ -344,8 +344,18 @@ keras.backend.clear_session()
 
 
 #--------------------------Impelment your code here:-------------------------------------
-new_a_model = create_tanh_mod()
-new_a_model.add(BatchNormalization(axis=1))
+def create_tanh_mod_batch():
+    new_a_model = Sequential()
+    new_a_model.add(Dense(300, input_shape=(32*32,), kernel_initializer='he_normal'))
+    new_a_model.add(Activation('tanh'))
+    model.add(BatchNormalization(axis=1))
+    new_a_model.add(Dense(150, kernel_initializer='he_normal'))
+    new_a_model.add(Activation('tanh'))  
+    model.add(BatchNormalization(axis=1))
+    new_a_model.add(Dense(4, kernel_initializer='he_normal'))  
+    return new_a_model
+    
+new_a_model = create_tanh_mod_batch()
 #---------------------------------------------------------------------------------------
 
 
