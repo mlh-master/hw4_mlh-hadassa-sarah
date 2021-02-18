@@ -29,7 +29,7 @@ from tensorflow.keras.layers import *
 from skimage.io import imread
 
 from skimage.transform import rescale, resize, downscale_local_mean
-#get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('matplotlib', 'inline')
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 mpl.rc('axes', labelsize=14)
@@ -140,22 +140,7 @@ keras.backend.clear_session()
 
 
 #--------------------------Impelment your code here:-------------------------------------
-print('Orig:',BaseX_train.shape)
-X_train_flat = np.array([item.flatten() for item in BaseX_train])
-X_val_flat = np.array([item.flatten() for item in BaseX_val])
-print('flat: ',X_train_flat.shape)
 
-def create_relu_mod():
-    model_relu = Sequential()
-    model_relu.add(Dense(300, input_shape=(32*32,), kernel_initializer='he_normal'))
-    model_relu.add(Activation('relu'))
-    model_relu.add(Dense(150, kernel_initializer='he_normal'))
-    model_relu.add(Activation('relu'))  
-    model_relu.add(Dense(4, kernel_initializer='he_normal'))  
-    model_relu.add(Activation('softmax'))
-    return model_relu
-
-model_relu = create_relu_mod()
 #----------------------------------------------------------------------------------------
 
 
@@ -185,13 +170,7 @@ AdamOpt = Adam(lr=learn_rate,decay=decay)
 
 
 #--------------------------Impelment your code here:-------------------------------------
-model_relu.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer=AdamOpt)
-#model_relu.fit(X_train_flat, BaseY_train,verbose=2,validation_data=(X_val_flat, BaseY_val))
 
-X_test_flat = np.array([item.flatten() for item in X_test])
-history = model_relu.fit(X_train_flat, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(X_val_flat, BaseY_val))
-eval_model = model_relu.evaluate(X_test_flat, Y_test,batch_size=batch_size)
-print(f'The accuracy of the model is: {eval_model[1]} and the loss is: {eval_model[0]}')
 #----------------------------------------------------------------------------------------
 
 
@@ -206,17 +185,7 @@ print(f'The accuracy of the model is: {eval_model[1]} and the loss is: {eval_mod
 
 
 #--------------------------Impelment your code here:-------------------------------------
-def create_tanh_mod():
-    new_a_model = Sequential()
-    new_a_model.add(Dense(300, input_shape=(32*32,), kernel_initializer='he_normal'))
-    new_a_model.add(Activation('tanh'))
-    new_a_model.add(Dense(150, kernel_initializer='he_normal'))
-    new_a_model.add(Activation('tanh'))  
-    new_a_model.add(Dense(4, kernel_initializer='he_normal'))  
-    new_a_model.add(Activation('softmax')) 
-    return new_a_model
-    
-new_a_model = create_tanh_mod()
+
 #----------------------------------------------------------------------------------------
 
 
@@ -251,13 +220,7 @@ AdamOpt = Adam(lr=learn_rate,decay=decay)
 
 
 #--------------------------Impelment your code here:-------------------------------------
-new_a_model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer=AdamOpt)
-#model_relu.fit(X_train_flat, BaseY_train,verbose=2,validation_data=(X_val_flat, BaseY_val))
 
-#X_test_flat = np.array([item.flatten() for item in X_test])
-history_25 = new_a_model.fit(X_train_flat, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(X_val_flat, BaseY_val))
-eval_model = new_a_model.evaluate(X_test_flat, Y_test,batch_size=batch_size)
-print(f'The accuracy of the model is: {eval_model[1]} and the loss is: {eval_model[0]}')
 #-----------------------------------------------------------------------------------------
 
 
@@ -279,10 +242,7 @@ AdamOpt = Adam(lr=learn_rate,decay=decay)
 
 
 #--------------------------Impelment your code here:-------------------------------------
-new_a_model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer=AdamOpt)
-history_40 = new_a_model.fit(X_train_flat, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(X_val_flat, BaseY_val))
-eval_model = new_a_model.evaluate(X_test_flat, Y_test,batch_size=batch_size)
-print(f'The accuracy of the model is: {eval_model[1]} and the loss is: {eval_model[0]}')
+
 #-----------------------------------------------------------------------------------------
 
 
@@ -303,7 +263,7 @@ keras.backend.clear_session()
 
 
 #--------------------------Impelment your code here:-------------------------------------
-model_relu = create_relu_mod()
+
 #----------------------------------------------------------------------------------------
 
 
@@ -321,10 +281,7 @@ AdamOpt = Adam(lr=learn_rate,decay=decay)
 
 
 #--------------------------Impelment your code here:-------------------------------------
-model_relu.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer=AdamOpt)
-history_relu2 = model_relu.fit(X_train_flat, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(X_val_flat, BaseY_val))
-eval_model = model_relu.evaluate(X_test_flat, Y_test,batch_size=batch_size)
-print(f'The accuracy of the model is: {eval_model[1]} and the loss is: {eval_model[0]}')
+
 #----------------------------------------------------------------------------------------
 
 
@@ -345,19 +302,7 @@ keras.backend.clear_session()
 
 
 #--------------------------Impelment your code here:-------------------------------------
-def create_tanh_mod_batch():
-    new_a_model = Sequential()
-    new_a_model.add(Dense(300, input_shape=(32*32,), kernel_initializer='he_normal'))
-    new_a_model.add(Activation('tanh'))
-    new_a_model.add(BatchNormalization(axis=1))
-    new_a_model.add(Dense(150, kernel_initializer='he_normal'))
-    new_a_model.add(Activation('tanh'))  
-    new_a_model.add(BatchNormalization(axis=1))
-    new_a_model.add(Dense(4, kernel_initializer='he_normal'))  
-    new_a_model.add(Activation('softmax'))
-    return new_a_model
-    
-new_a_model = create_tanh_mod_batch()
+
 #---------------------------------------------------------------------------------------
 
 
@@ -377,10 +322,7 @@ AdamOpt = Adam(lr=learn_rate,decay=decay)
 
 #Preforming the training by using fit 
 #--------------------------Impelment your code here:-------------------------------------
-new_a_model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer=AdamOpt)
-history_new_a_model2 = new_a_model.fit(X_train_flat, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(X_val_flat, BaseY_val))
-eval_model = new_a_model.evaluate(X_test_flat, Y_test,batch_size=batch_size)
-print(f'The accuracy of the model is: {eval_model[1]} and the loss is: {eval_model[0]}')
+
 #----------------------------------------------------------------------------------------
 
 
