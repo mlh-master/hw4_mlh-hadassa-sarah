@@ -484,7 +484,7 @@ NNet.compile(optimizer=AdamOpt, metrics=['acc'], loss='categorical_crossentropy'
 
 #Saving checkpoints during training:
 Checkpath = os.getcwd()
-Checkp = ModelCheckpoint(Checkpath, monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=True, save_freq=1)
+#Checkp = ModelCheckpoint(Checkpath, monitor='val_acc', verbose=1, save_best_only=True, save_weights_only=True, save_freq=1)
 
 
 # In[ ]:
@@ -520,7 +520,54 @@ print('test loss, test acc:', results)
 
 
 #--------------------------Impelment your code here:-------------------------------------
+# get_net to have as an input argument a list of number of filters in each layers
+def get_net(input_shape,drop,dropRate,reg,filters):
+    #Defining the network architecture:
+    model = Sequential()
+    model.add(Permute((1,2,3),input_shape = input_shape))
+    model.add(Conv2D(filters=filters[0], kernel_size=(3,3), padding='same', activation='relu',name='Conv2D_1',kernel_regularizer=regularizers.l2(reg)))
+    if drop:
+        model.add(Dropout(rate=dropRate))
+    model.add(BatchNormalization(axis=1))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(filters[1], kernel_size=(3,3), padding='same', activation='relu',name='Conv2D_2',kernel_regularizer=regularizers.l2(reg)))
+    if drop:    
+        model.add(Dropout(rate=dropRate))
+    model.add(BatchNormalization(axis=1))
+    model.add(Conv2D(filters[2], kernel_size=(3,3), padding='same', activation='relu',name='Conv2D_3',kernel_regularizer=regularizers.l2(reg)))
+    if drop:
+        model.add(Dropout(rate=dropRate))
+    model.add(BatchNormalization(axis=1))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(filters[3], kernel_size=(3,3), padding='same', activation='relu',name='Conv2D_4',kernel_regularizer=regularizers.l2(reg)))
+    if drop:
+        model.add(Dropout(rate=dropRate))
+    model.add(BatchNormalization(axis=1))
+    model.add(Conv2D(filters[4], kernel_size=(3,3), padding='same', activation='relu',name='Conv2D_5',kernel_regularizer=regularizers.l2(reg)))
+    if drop:
+        model.add(Dropout(rate=dropRate))
+    model.add(BatchNormalization(axis=1))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Flatten())
+    #Fully connected network tail:      
+    model.add(Dense(512, activation='elu',name='FCN_1')) 
+    if drop:
+        model.add(Dropout(rate=dropRate))
+    model.add(Dense(128, activation='elu',name='FCN_2'))
+    model.add(Dense(4, activation= 'softmax',name='FCN_3'))
+    model.summary()
+    return model
 
+NNet=get_net(input_shape,drop,dropRate,reg,filters=[32,64,64,128,128])
+
+#Compile the network: 
+NNet.compile(optimizer=AdamOpt, metrics=['acc'], loss='categorical_crossentropy')
+
+#Preforming the training by using fit 
+h = NNet.fit(x=BaseX_train, y=BaseY_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_split=0, validation_data = (BaseX_val, BaseY_val), shuffle=True)
+
+result = NNet.evaluate(X_test,Y_test)
+print('test loss, test acc:', result)
 #----------------------------------------------------------------------------------------
 
 
