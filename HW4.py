@@ -140,14 +140,12 @@ keras.backend.clear_session()
 
 
 #--------------------------Impelment your code here:-------------------------------------
-print('Orig:',BaseX_train.shape)
-X_train_flat = np.array([item.flatten() for item in BaseX_train])
-X_val_flat = np.array([item.flatten() for item in BaseX_val])
-print('flat: ',X_train_flat.shape)
-
+# Creation of the model using ReLU activation functions
 def create_relu_mod():
+    input_shape=(32,32,1)
     model_relu = Sequential()
-    model_relu.add(Dense(300, input_shape=(32*32,), kernel_initializer='he_normal'))
+    model_relu.add(Flatten(input_shape=input_shape))
+    model_relu.add(Dense(300, kernel_initializer='he_normal'))
     model_relu.add(Activation('relu'))
     model_relu.add(Dense(150, kernel_initializer='he_normal'))
     model_relu.add(Activation('relu'))  
@@ -185,12 +183,10 @@ AdamOpt = Adam(lr=learn_rate,decay=decay)
 
 
 #--------------------------Impelment your code here:-------------------------------------
+# Compilation, fitting, and evaluation:
 model_relu.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer=AdamOpt)
-#model_relu.fit(X_train_flat, BaseY_train,verbose=2,validation_data=(X_val_flat, BaseY_val))
-
-X_test_flat = np.array([item.flatten() for item in X_test])
-history = model_relu.fit(X_train_flat, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(X_val_flat, BaseY_val))
-eval_model = model_relu.evaluate(X_test_flat, Y_test,batch_size=batch_size)
+history = model_relu.fit(BaseX_train, BaseY_train,  batch_size=batch_size, epochs=epochs, validation_data=(BaseX_val, BaseY_val))
+eval_model = model_relu.evaluate(X_test, Y_test,batch_size=batch_size)
 print(f'The accuracy of the model is: {eval_model[1]} and the loss is: {eval_model[0]}')
 #----------------------------------------------------------------------------------------
 
@@ -206,9 +202,12 @@ print(f'The accuracy of the model is: {eval_model[1]} and the loss is: {eval_mod
 
 
 #--------------------------Impelment your code here:-------------------------------------
+# Creation of the model using tanh activation functions
 def create_tanh_mod():
+    input_shape=(32,32,1)
     new_a_model = Sequential()
-    new_a_model.add(Dense(300, input_shape=(32*32,), kernel_initializer='he_normal'))
+    new_a_model.add(Flatten(input_shape=input_shape)) #input_shape=input_shape
+    new_a_model.add(Dense(300, input_shape=(32*32,),kernel_initializer='he_normal'))
     new_a_model.add(Activation('tanh'))
     new_a_model.add(Dense(150, kernel_initializer='he_normal'))
     new_a_model.add(Activation('tanh'))  
@@ -251,7 +250,7 @@ AdamOpt = Adam(lr=learn_rate,decay=decay)
 
 
 #--------------------------Impelment your code here:-------------------------------------
-# Compiling the model
+# Compilation of the model
 new_a_model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer=AdamOpt)
 
 # Saving the model
@@ -263,9 +262,9 @@ model_path = os.path.join(save_dir, model_name)
 new_a_model.save(model_path)
 print('Saved initialized model at %s ' % model_path)
 
-# Fitting and evaluating
-history_25 = new_a_model.fit(X_train_flat, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(X_val_flat, BaseY_val))
-eval_model = new_a_model.evaluate(X_test_flat, Y_test,batch_size=batch_size)
+# Fitting and evaluation over 25 epochs
+history_25 = new_a_model.fit(BaseX_train, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(BaseX_val, BaseY_val))
+eval_model = new_a_model.evaluate(X_test, Y_test,batch_size=batch_size)
 print(f'The accuracy of the model is: {eval_model[1]} and the loss is: {eval_model[0]}')
 #-----------------------------------------------------------------------------------------
 
@@ -288,10 +287,11 @@ AdamOpt = Adam(lr=learn_rate,decay=decay)
 
 
 #--------------------------Impelment your code here:-------------------------------------
+# loading, fitting, and evaluation over 40 epochs:
 from tensorflow.keras.models import load_model
 new_a_model = load_model("results/init_weigths_1.h5")
-history_40 = new_a_model.fit(X_train_flat, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(X_val_flat, BaseY_val))
-eval_model = new_a_model.evaluate(X_test_flat, Y_test,batch_size=batch_size)
+history_40 = new_a_model.fit(BaseX_train, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(BaseX_val, BaseY_val))
+eval_model = new_a_model.evaluate(X_test, Y_test,batch_size=batch_size)
 print(f'The accuracy of the model is: {eval_model[1]} and the loss is: {eval_model[0]}')
 #-----------------------------------------------------------------------------------------
 
@@ -313,6 +313,7 @@ keras.backend.clear_session()
 
 
 #--------------------------Impelment your code here:-------------------------------------
+# Creation (again) of model using ReLU activation functions:
 model_relu = create_relu_mod()
 #----------------------------------------------------------------------------------------
 
@@ -331,9 +332,10 @@ AdamOpt = Adam(lr=learn_rate,decay=decay)
 
 
 #--------------------------Impelment your code here:-------------------------------------
+# Compilation, fitting, and evaluation:
 model_relu.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer=AdamOpt)
-history_relu2 = model_relu.fit(X_train_flat, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(X_val_flat, BaseY_val))
-eval_model = model_relu.evaluate(X_test_flat, Y_test,batch_size=batch_size)
+history_relu2 = model_relu.fit(BaseX_train, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(BaseX_val, BaseY_val))
+eval_model = model_relu.evaluate(X_test, Y_test,batch_size=batch_size)
 print(f'The accuracy of the model is: {eval_model[1]} and the loss is: {eval_model[0]}')
 #----------------------------------------------------------------------------------------
 
@@ -355,17 +357,20 @@ keras.backend.clear_session()
 
 
 #--------------------------Impelment your code here:-------------------------------------
+# Creation of model using tanh activation functions with batch normalization layers:
 def create_tanh_mod_batch():
-    new_a_model = Sequential()
-    new_a_model.add(Dense(300, input_shape=(32*32,), kernel_initializer='he_normal'))
-    new_a_model.add(Activation('tanh'))
-    new_a_model.add(BatchNormalization(axis=1))
-    new_a_model.add(Dense(150, kernel_initializer='he_normal'))
-    new_a_model.add(Activation('tanh'))  
-    new_a_model.add(BatchNormalization(axis=1))
-    new_a_model.add(Dense(4, kernel_initializer='he_normal'))  
-    new_a_model.add(Activation('softmax'))
-    return new_a_model
+    input_shape=(32,32,1)
+    new_model = Sequential()
+    new_model.add(Flatten(input_shape=input_shape))
+    new_model.add(Dense(300, input_shape=(32*32,), kernel_initializer='he_normal'))
+    new_model.add(Activation('tanh'))
+    new_model.add(BatchNormalization(axis=1))
+    new_model.add(Dense(150, kernel_initializer='he_normal'))
+    new_model.add(Activation('tanh'))  
+    new_model.add(BatchNormalization(axis=1))
+    new_model.add(Dense(4, kernel_initializer='he_normal'))  
+    new_model.add(Activation('softmax'))
+    return new_model
     
 new_a_model = create_tanh_mod_batch()
 #---------------------------------------------------------------------------------------
@@ -387,9 +392,10 @@ AdamOpt = Adam(lr=learn_rate,decay=decay)
 
 #Preforming the training by using fit 
 #--------------------------Impelment your code here:-------------------------------------
+# Compilation, fitting, and evaluation:
 new_a_model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer=AdamOpt)
-history_new_a_model2 = new_a_model.fit(X_train_flat, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(X_val_flat, BaseY_val))
-eval_model = new_a_model.evaluate(X_test_flat, Y_test,batch_size=batch_size)
+history_new_a_model2 = new_a_model.fit(BaseX_train, BaseY_train,  batch_size=batch_size, epochs=epochs,validation_data=(BaseX_val, BaseY_val))
+eval_model = new_a_model.evaluate(X_test, Y_test,batch_size=batch_size)
 print(f'The accuracy of the model is: {eval_model[1]} and the loss is: {eval_model[0]}')
 #----------------------------------------------------------------------------------------
 
